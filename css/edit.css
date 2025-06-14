@@ -1,0 +1,128 @@
+html, body{
+    height: 100%;
+    display: flex;
+    background-color: aliceblue;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 20px;
+    width: 60vw;
+    height: 60vh;
+    margin: auto;
+    padding: 5em;
+    background-color: aquamarine;
+}
+
+#nameDiv{
+    display: flex;
+    height: 2em;
+    margin-bottom: 20px;
+}
+
+#taskName{
+    width: 100%;
+    height: 100%;
+    color: rgb(36, 59, 0);
+    background-color: aliceblue;
+    border: 2px solid green;
+    border-radius: 5px;
+    font-size: large;
+    font-weight: bold;
+}
+
+#editForm{
+    display: flex;
+    height: 90%;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#descDiv{
+    display: flex;
+    flex-direction: column;
+    height: 20em;
+}
+
+#description{
+    background-color: aliceblue;
+    border: 2px solid green;
+    border-radius: 10px;
+    height: 100%;
+    margin-top: 2%;
+    padding: 10px;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1.4;  
+}
+
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+button{
+    font-weight: bold;
+}
+
+#save{
+    color: rgb(0, 60, 255);
+    background-color: aliceblue;
+    border: 2px solid rgb(123, 169, 255);
+    border-radius: 5px;
+    height: 3em;
+    width: 40%;
+    padding: 1%;
+}
+
+#save:hover{
+    color: white;
+    background-color: rgb(123, 169, 255);
+    border-color: aliceblue;
+    cursor: pointer;
+}
+
+#delete{
+    color: whitesmoke;
+    background-color: rgb(255, 88, 88);
+    border: 2px solid rgb(138, 0, 0);
+    border-radius: 5px;
+    height: 3em;
+    width: 40%;
+    padding: 1%;
+}
+
+#delete:hover{
+    background-color: rgb(138, 0, 0);
+    border-color: rgb(255, 88, 88);
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .content {
+      height: 100vh;
+      width: 100vw;
+      padding: 1em;
+      box-sizing: border-box;
+      border-radius: 0;
+    }
+  
+    #descDiv {
+      height: auto;
+      flex-grow: 1;
+    }
+  
+    #editForm {
+      height: 100%;
+    }
+}
