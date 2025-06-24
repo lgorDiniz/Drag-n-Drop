@@ -1,4 +1,4 @@
-import {addTask, getTasks, updateTask, getTask} from "./database.js";
+import { addTask, getTasks, updateTask } from "./database.js";
 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,37 +12,56 @@ document.addEventListener("DOMContentLoaded", async () => {
     let draggedCard = null;
 
     addButton.addEventListener("click", () => {
-        fillForm.style.display = "flex"
-    })
+        fillForm.style.display = "flex";
+    });
 
     function renderTask(task) {
         const taskElement = document.createElement("div");
         taskElement.classList.add("card");
         taskElement.innerText = task.name;
         taskElement.dataset.id = task.id;
+        taskElement.dataset.description = task.description;
         attachDragHandlers(taskElement);
-    
+
         const column = document.querySelector(`#${task.column}`);
         const formContainer = column.querySelector("#formContainer");
         if (column.id === "todo" && formContainer) {
             column.insertBefore(taskElement, formContainer);
-        } 
-        else {
+        } else {
             column.appendChild(taskElement);
         }
     }
 
-    formButton.addEventListener("click", async () =>{
+    formButton.addEventListener("click", async () => {
         const taskName = taskText.value.trim();
         if (!taskName) return;
 
-        const task = await addTask(taskName, "todo", "");
+        const tempId = "temp-" + Date.now();
+        const tempTask = {
+            id: tempId,
+            name: taskName,
+            column: "todo",
+            description: ""
+        };
 
-        renderTask(task);
+        renderTask(tempTask);
 
         taskText.value = "";
         fillForm.style.display = "none";
-    })
+
+        try {
+            const realTask = await addTask(taskName, "todo", "");
+            const tempCard = document.querySelector(`[data-id="${tempId}"]`);
+            if (tempCard) {
+                tempCard.dataset.id = realTask.id;
+            }
+        } catch (error) {
+            console.error("Task creation failed:", error);
+            const tempCard = document.querySelector(`[data-id="${tempId}"]`);
+            if (tempCard) tempCard.remove();
+            alert("Failed to save task to Firebase.");
+        }
+    });
 
     function attachDragHandlers(card) {
         let isDragging = false;
@@ -115,15 +134,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             document.querySelectorAll(".task").forEach(col => col.classList.remove("drag-over"));
             draggedCard = null;
-        
+
             if (!hasMoved) {
                 window.location.href = `./edit.html?id=${card.dataset.id}`;
                 return;
             }
-        
+
             const elements = document.elementsFromPoint(e.clientX, e.clientY);
             const dropZone = elements.find(el => el.classList?.contains("task"));
-        
+
             card.style.position = "";
             card.style.left = "";
             card.style.top = "";
@@ -133,35 +152,46 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.style.opacity = "";
             card.style.pointerEvents = "auto";
 
-            let originalParent = card.parentElement;
+            const originalParent = card.parentElement;
 
             if (!dropZone && originalParent) {
-                originalParent.appendChild(card);
+                if (originalParent.id === "todo") {
+                    const formContainer = originalParent.querySelector("#formContainer");
+
+                    if (formContainer) {
+                        originalParent.insertBefore(card, formContainer);
+                    } 
+                    else {
+                        originalParent.appendChild(card);
+                    }
+                } 
+                else {
+                    originalParent.appendChild(card);
+                }
             }
-        
+
             if (dropZone) {
                 const columnId = dropZone.id;
                 const cardId = card.dataset.id;
+                const name = card.innerText;
+                const description = card.dataset.description || "";
 
-                try{
-                    const task = await getTask(cardId);
-
-                    if (task) {
-                        await updateTask(task.id, card.innerText, columnId, task.description);
-                    }
-                }
-                catch(e){
-                    console.error(e);
-                }
-        
                 const formContainer = dropZone.querySelector("#formContainer");
                 if (dropZone.id === "todo" && formContainer) {
                     dropZone.insertBefore(card, formContainer);
                 } else {
                     dropZone.appendChild(card);
                 }
+
+                try {
+                    await updateTask(cardId, name, columnId, description);
+                } catch (e) {
+                    console.error("Failed to update task:", e);
+                    alert("Failed to update task in database.");
+                    originalParent.appendChild(card);
+                }
             }
-        
+
             isDragging = false;
             hasMoved = false;
         });
@@ -189,4 +219,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     document.querySelectorAll(".card").forEach(attachDragHandlers);
-})
+});
