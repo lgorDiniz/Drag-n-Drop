@@ -1,11 +1,15 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+import {addTask, getTasks, updateTask, getTask} from "./database.js";
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const tasks = await getTasks();
     tasks.forEach(renderTask);
 
     const addButton = document.querySelector("#todo #showForm");
     const fillForm = document.querySelector("#taskForm");
     const formButton = document.querySelector("#addTask");
     const taskText = document.querySelector("#inputBar");
+    let draggedCard = null;
 
     addButton.addEventListener("click", () => {
         fillForm.style.display = "flex"
@@ -14,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderTask(task) {
         const taskElement = document.createElement("div");
         taskElement.classList.add("card");
-        taskElement.innerText = task.taskName;
+        taskElement.innerText = task.name;
         taskElement.dataset.id = task.id;
         attachDragHandlers(taskElement);
     
@@ -28,24 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function saveTaskToLocalStorage(task) {
-        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        tasks.push(task);
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-
-    formButton.addEventListener("click", () =>{
+    formButton.addEventListener("click", async () =>{
         const taskName = taskText.value.trim();
         if (!taskName) return;
 
-        const task = {
-            id: crypto.randomUUID(),
-            taskName: taskName,
-            description: "",
-            column: "todo"
-        };
+        const task = await addTask(taskName, "todo", "");
 
-        saveTaskToLocalStorage(task);
         renderTask(task);
 
         taskText.value = "";
@@ -117,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        card.addEventListener("pointerup", (e) => {
+        card.addEventListener("pointerup", async (e) => {
             pointerDown = false;
             card.releasePointerCapture(e.pointerId);
 
@@ -141,25 +133,25 @@ document.addEventListener("DOMContentLoaded", () => {
             card.style.opacity = "";
             card.style.pointerEvents = "auto";
 
-            let originalParent;
+            let originalParent = card.parentElement;
 
             if (!dropZone && originalParent) {
-                originalParent = card.parentElement;
                 originalParent.appendChild(card);
             }
         
             if (dropZone) {
                 const columnId = dropZone.id;
                 const cardId = card.dataset.id;
-                const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-                const task = tasks.find(t => t.id === cardId);
-        
-                if (task) {
-                    task.column = columnId;
-        
-                    task.taskName = card.innerText;
-        
-                    localStorage.setItem("tasks", JSON.stringify(tasks));
+
+                try{
+                    const task = await getTask(cardId);
+
+                    if (task) {
+                        await updateTask(task.id, card.innerText, columnId, task.description);
+                    }
+                }
+                catch(e){
+                    console.error(e);
                 }
         
                 const formContainer = dropZone.querySelector("#formContainer");
