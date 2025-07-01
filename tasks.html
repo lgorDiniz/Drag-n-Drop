@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag'n Drop</title>
+    <link rel="stylesheet" href="./css/tasks.css">
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase.js" defer></script>
+    <script type="module" src="./js/tasks.js" defer></script>
+
+
+    <!--
+        Ideas to be added to the project:
+        1. Login page.
+    -->
+</head>
+<body>
+    <div id="content">
+        <div id="todo" class="task">
+            <h1>To Do</h1>
+
+            <div id="formContainer">
+                <form id="taskForm">
+                    <input type="text" id="inputBar">
+                    <button type="button" class="button" id="addTask">+</button>
+                </form>
+            </div>
+
+            <div class="button" id="showForm">Add Task</div>
+        </div>
+    
+        <div id="inProgress" class="task">
+            <h1>In Progress</h1>
+        </div>
+    
+        <div id="completed" class="task">
+            <h1>Completed</h1>
+        </div>
+    </div>
+</body>
+</html>

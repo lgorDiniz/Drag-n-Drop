@@ -1,0 +1,80 @@
+html, body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+h1{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(105, 105, 255);
+}
+
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2%;
+    background-color: azure;
+    border: 5px solid lightblue;
+    border-radius: 5%;
+    height: 80%;
+    width: 80%;
+}
+
+form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 10%;
+    width: 100%;
+}
+
+input{
+    margin: 2%;
+    padding: 2%;
+    width: 80%;
+    background-color:rgb(249, 252, 255);
+    border: 2px solid rgb(105, 105, 255);
+}
+
+input:focus{
+    outline: none;
+    border-color: rgb(0, 0, 199);
+}
+
+button{
+    margin: 2%;
+    padding: 2%;
+    width: 50%;
+    color: rgb(105, 105, 255);
+    font-weight: bold;
+    background-color:rgb(249, 252, 255);
+    border: 2px solid rgb(105, 105, 255);
+}
+
+button:hover{
+    color: rgb(249, 252, 255);
+    background-color: rgb(105, 105, 255);
+    border-color: rgb(0, 30, 161);
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .loginForm{
+        margin: 0;
+        justify-content: space-between;
+        border: none;
+        border-radius: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    form{
+        height: 60%;
+    }
+}
