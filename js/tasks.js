@@ -1,21 +1,39 @@
 import { auth } from "./firebaseConfig.js";
 import { addTask, getTasks, updateTask } from "./database.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 let currentUser = null;
+
 
 document.addEventListener("DOMContentLoaded", () => {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
+      const userName = user.displayName;
       currentUser = user;
       const tasks = await getTasks(user);
+      const userField = document.getElementById("userName");
+
+      userField.innerText = `Welcome ${userName}`
       tasks.forEach(renderTask);
       setupTaskPage();
     } else {
       window.location.href = "index.html";
     }
   });
+
+  const logoutButton = document.getElementById("logout");
+
+  logoutButton.addEventListener("click", logout);
 });
+
+async function logout() {
+  await signOut(auth);
+  currentUser = null;
+  window.location.href = "./index.html";
+  console.log(currentUser);
+
+  
+}
 
 function setupTaskPage() {
   const addButton = document.querySelector("#todo #showForm");

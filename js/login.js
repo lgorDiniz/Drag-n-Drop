@@ -1,17 +1,17 @@
-import { auth } from "./firebaseConfig.js";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import {auth, db } from "./firebaseConfig.js";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import {collection, addDoc} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-async function createUser(email, password) {
+async function createUser(username, email, password) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCredential.user, {
+        displayName: username
+    });
 }
 
 async function login(email, password) {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
-}
-
-async function logout() {
-    await signOut(auth);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -52,8 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
         signUpButton.addEventListener("click", async () => {
             const email = createEmail.value.trim();
             const password = createPassword.value.trim();
+            const username = createUsername.value.trim();
             try {
-                await createUser(email, password);
+                await createUser(username, email, password);
                 window.location.href = "index.html";
             } catch (e) {
                 if (e.code === "auth/email-already-in-use") {
